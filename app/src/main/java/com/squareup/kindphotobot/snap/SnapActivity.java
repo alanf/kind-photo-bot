@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
@@ -21,8 +22,10 @@ import com.squareup.kindphotobot.snap.camera.CameraSourcePreview;
 import com.squareup.kindphotobot.snap.camera.GraphicOverlay;
 import com.squareup.kindphotobot.snap.graphic.FaceGraphic;
 import com.squareup.kindphotobot.snap.graphic.GraphicFactory;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import timber.log.Timber;
 
 import static android.Manifest.permission.CAMERA;
@@ -59,6 +62,7 @@ public class SnapActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.snap);
 
+
     preview = findViewById(R.id.preview);
     graphicOverlay = preview.getGraphicOverlay();
 
@@ -69,12 +73,27 @@ public class SnapActivity extends AppCompatActivity {
     }
 
     RecyclerView recyclerView = findViewById(R.id.graphic_recycler_view);
+    findViewById(R.id.capture).setOnClickListener(v -> capture());
 
     centerSnap(recyclerView, (position) -> updateGraphicFactory(GraphicFactory.values()[position]));
   }
 
   private boolean hasPermission(String permission) {
     return ActivityCompat.checkSelfPermission(this, permission) == PERMISSION_GRANTED;
+  }
+
+  class Foo implements CameraSource.ShutterCallback, CameraSource.PictureCallback {
+    public void onShutter() {
+    }
+    public void onPictureTaken(byte[] var1) {
+      System.out.println("HELLLLOOOOOO ");
+    }
+  }
+
+  Foo callback = new Foo();
+  private void capture() {
+
+    cameraSource.takePicture(callback, callback);
   }
 
   public void updateGraphicFactory(GraphicFactory graphicFactory) {
